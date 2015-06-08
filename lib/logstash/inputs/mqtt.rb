@@ -33,7 +33,7 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
   config :ssl, :validate => :boolean, :default => false
   
   # The topic that the plugin should subscribe to
-  config :topic, validate => :string, :required => true
+  config :topic, :validate => :string, :required => true
 
   public
   def register
@@ -41,8 +41,8 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
     @client = MQTT::Client.connect(
         :host => @mqttHost,
         :port => @port,
-        :ssl => @ssl
-        :client_id => MQTT::Client.generate_client_id("logstash-mqtt-input")
+        :ssl => @ssl,
+        :client_id => MQTT::Client.generate_client_id("logstash-mqtt-input", 4)
     )
   end # def register
 
@@ -52,9 +52,11 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
 #      decorate(event)
 #      queue << event
 #    end # loop
-
+    puts @topic
+    @client.subscribe(@topic)
     @client.get do |topic,message|
         #hej
+        puts "message was received #{message}"
         @codec.decode(message) do |event|
             event["host"] ||= @host
             event["topic"] = topic
@@ -64,7 +66,7 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
         end
     end
     
-    @client.subscribe(@topic)
+    
   end # def run
 
 end # class LogStash::Inputs::Example
