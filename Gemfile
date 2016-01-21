@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 gemspec
-gem "logstash", :github => "elastic/logstash", :branch => "1.4"
+gem 'logstash-devutils', '~> 0.0.18'
 gem 'mqtt', '~> 0.3.1'
