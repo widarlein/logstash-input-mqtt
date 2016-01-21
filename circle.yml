@@ -1,0 +1,12 @@
+machine:
+  ruby:
+    version: 2.3.0
+
+dependencies:
+  override:
+    - echo "No dependencies"
+
+test:
+    override:
+        - gem build logstash-input-mqtt.gemspec
+        - cp ./logstash-input-mqtt-0.0.1.gem $CIRCLE_ARTIFACTS/
