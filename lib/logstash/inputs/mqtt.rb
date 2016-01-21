@@ -22,7 +22,13 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
   
   # Whether connection to the MQTT broker is using SSL or not.
   config :ssl, :validate => :boolean, :default => false
-  
+
+  # The username for the MQTT connection
+  config :username, :validate => :string, :default => nil
+
+  # The password for the MQTT connection
+  config :password, :validate => :string, :default => nil
+
   # The host of the MQTT broker
   config :client_id, :validate => :string, :default => MQTT::Client.generate_client_id("logstash-mqtt-input", 4)
 
@@ -42,6 +48,8 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
         :host => @mqttHost,
         :port => @port,
         :ssl => @ssl,
+        :username => @username,
+        :password => @password,
         :client_id => @client_id,
         :clean_session => @clean_session
     )
