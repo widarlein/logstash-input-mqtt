@@ -16,15 +16,24 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
   
   # The host of the MQTT broker
   config :mqttHost, :validate => :string, :default => "localhost", :required => true
-  
+
+  # The host of the MQTT broker
+  config :clientId, :validate => :string, :default => MQTT::Client.generate_client_id("logstash-mqtt-input", 4), :required => true
+
   # The port that the MQTT broker is using
   config :port, :validate => :number, :default => 1883, :required => true
   
   # Whether connection to the MQTT broker is using SSL or not.
   config :ssl, :validate => :boolean, :default => false
-  
+
+  # Whether or not to use a clean session
+  config :cleanSession, :validate => :boolean, :default => true
+
   # The topic that the plugin should subscribe to
   config :topic, :validate => :string, :required => true
+
+  # The topic qos that the plugin should subscribe with
+  config :qos, :validate => :number, :default => 0, :required => true
 
   public
   def register
@@ -33,13 +42,14 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
         :host => @mqttHost,
         :port => @port,
         :ssl => @ssl,
-        :client_id => MQTT::Client.generate_client_id("logstash-mqtt-input", 4)
+        :client_id => @clientId,
+        :clean_session => @cleanSession
     )
   end # def register
 
   def run(queue)
 
-    @client.subscribe(@topic)
+    @client.subscribe(@topic => :qos)
     @client.get do |topic,message|
         @codec.decode(message) do |event|
             event["host"] ||= @host
@@ -51,4 +61,4 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
     end
   end # def run
 
-end # class LogStash::Inputs::Example
+end # class LogStash::Inputs::Mqtt
