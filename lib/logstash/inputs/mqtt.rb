@@ -12,14 +12,14 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
   config_name "mqtt"
 
   # The codec used for input data. Input codecs are a convenient method for decoding your data before it enters the input, without needing a separate filter in your Logstash pipeline.
-  default :codec, "plain" 
-  
+  default :codec, "plain"
+
   # The host of the MQTT broker
   config :mqttHost, :validate => :string, :default => "localhost"
-  
+
   # The port that the MQTT broker is using
   config :port, :validate => :number, :default => 1883
-  
+
   # Whether connection to the MQTT broker is using SSL or not.
   config :ssl, :validate => :boolean, :default => false
 
@@ -60,9 +60,12 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
     @client.subscribe(@topic => @qos)
     @client.get do |topic,message|
         @codec.decode(message) do |event|
-            event["host"] ||= @host
-            event["topic"] = topic
+            host = event.get("host")
+            host ||= @host
+            host.set("host", host)
             
+            event.set("topic", topic)
+
             decorate(event)
             queue << event
         end
