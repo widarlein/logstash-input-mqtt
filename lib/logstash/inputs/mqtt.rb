@@ -62,7 +62,7 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
         @codec.decode(message) do |event|
             host = event.get("host")
             host ||= @host
-            host.set("host", host)
+            event.set("host", host)
             
             event.set("topic", topic)
 
