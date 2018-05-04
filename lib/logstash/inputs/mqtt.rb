@@ -41,6 +41,15 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
   # The topic qos that the plugin should subscribe with
   config :qos, :validate => :number, :default => 0
 
+  # Path to certificate for SSL/TLS client authentication
+  config :cert_file, :validate => :string, :default => nil
+
+  # Path to private key for SSL/TLS client authentication
+  config :key_file, :validate => :string, :default => nil
+
+  # Path to CA file for SSL/TLS server validation
+  config :ca_file, :validate => :string, :default => nil
+
   public
   def register
     @host = Socket.gethostname
@@ -51,7 +60,10 @@ class LogStash::Inputs::Mqtt < LogStash::Inputs::Base
         :username => @username,
         :password => @password,
         :client_id => @client_id,
-        :clean_session => @clean_session
+        :clean_session => @clean_session,
+        :cert_file => @cert_file,
+        :key_file => @key_file,
+        :ca_file => @ca_file
     )
   end # def register
 
